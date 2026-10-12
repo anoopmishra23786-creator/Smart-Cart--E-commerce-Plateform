@@ -1,6 +1,6 @@
 # SmartCart - Modern E-Commerce Platform
 
-A production-grade, human-crafted full-stack e-commerce web platform built with **FastAPI (Python 3.11+)**, **Supabase (PostgreSQL & Authentication)**, **Bootstrap 5**, and **Vanilla JavaScript**.
+A  full-stack e-commerce web platform built with **FastAPI (Python 3.11+)**, **Supabase (PostgreSQL & Authentication)**, **Bootstrap 5**, and **Vanilla JavaScript**.
 
 SmartCart emphasizes real functionality, clean modular architecture, server-side price recalculation, stock concurrency control, and authentic usability rather than generic AI templates.
 

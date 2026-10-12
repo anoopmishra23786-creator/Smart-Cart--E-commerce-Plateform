@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - SmartCart Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="bg-light">
+
+  <!-- Admin Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="/admin/index.html">
+        <i class="bi bi-shield-check text-warning"></i>
+        <span>SmartCart Admin Console</span>
+      </a>
+
+      <div class="d-flex align-items-center gap-3">
+        <a href="/index.html" class="btn btn-sm btn-outline-light"><i class="bi bi-box-arrow-up-right me-1"></i> View Live Store</a>
+        <button class="btn btn-sm btn-danger" id="btn-admin-logout">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Admin Main Dashboard -->
+  <main class="py-4">
+    <div class="container-fluid px-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="h4 fw-bold mb-1">Administrative Overview</h2>
+          <p class="text-muted small mb-0">Live PostgreSQL sales analytics, product management, and order processing.</p>
+        </div>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-add-product">
+          <i class="bi bi-plus-lg me-1"></i> Add New Product
+        </button>
+      </div>
+
+      <!-- Metrics Cards -->
+      <div class="row g-3 mb-4" id="stats-cards">
+        <div class="col-xl-3 col-md-6">
+          <div class="bg-white border rounded-3 p-3 shadow-sm">
+            <span class="text-muted small text-uppercase fw-semibold">Total Revenue</span>
+            <h3 class="fw-bold my-1 text-primary" id="stat-revenue">₹0.00</h3>
+            <span class="text-success small"><i class="bi bi-graph-up me-1"></i> Authoritative sales records</span>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+          <div class="bg-white border rounded-3 p-3 shadow-sm">
+            <span class="text-muted small text-uppercase fw-semibold">Total Orders</span>
+            <h3 class="fw-bold my-1 text-dark" id="stat-orders">0</h3>
+            <span class="text-muted small">Processed via database</span>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+          <div class="bg-white border rounded-3 p-3 shadow-sm">
+            <span class="text-muted small text-uppercase fw-semibold">Active Catalog</span>
+            <h3 class="fw-bold my-1 text-dark" id="stat-products">0</h3>
+            <span class="text-muted small">Live product listings</span>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+          <div class="bg-white border rounded-3 p-3 shadow-sm">
+            <span class="text-muted small text-uppercase fw-semibold">Low Inventory Alert</span>
+            <h3 class="fw-bold my-1 text-danger" id="stat-low-stock">0</h3>
+            <span class="text-danger small">Stock quantity &le; 10 units</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Tabs: Orders & Products -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active fw-semibold" id="orders-tab" data-bs-toggle="tab" data-bs-target="#tab-orders" type="button">Customer Orders</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link fw-semibold" id="products-tab" data-bs-toggle="tab" data-bs-target="#tab-products" type="button">Product Catalog & Inventory</button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body p-4">
+          <div class="tab-content" id="adminTabsContent">
+            <!-- TAB 1: ORDERS -->
+            <div class="tab-pane fade show active" id="tab-orders" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light small text-uppercase text-muted">
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Recipient</th>
+                      <th>Items</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Payment</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-orders-table-body">
+                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading orders...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- TAB 2: PRODUCTS -->
+            <div class="tab-pane fade" id="tab-products" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light small text-uppercase text-muted">
+                    <tr>
+                      <th>Image</th>
+                      <th>Product Title</th>
+                      <th>Price</th>
+                      <th>Stock Quantity</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-products-table-body">
+                    <tr><td colspan="6" class="text-center py-4 text-muted">Loading product catalog...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Add Product -->
+  <div class="modal fade" id="modal-add-product" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Create New Catalog Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="form-create-product">
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label small fw-semibold">Product Title</label>
+                <input type="text" id="add-prod-name" class="form-control" required placeholder="e.g. Apex Minimalist Desk Mat">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Unique Slug</label>
+                <input type="text" id="add-prod-slug" class="form-control" required placeholder="apex-desk-mat">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Category</label>
+                <select id="add-prod-category" class="form-select" required></select>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold">Price (₹)</label>
+                <input type="number" step="0.01" id="add-prod-price" class="form-control" required placeholder="1499.00">
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold">Compare At (₹)</label>
+                <input type="number" step="0.01" id="add-prod-compare" class="form-control" placeholder="1999.00">
+              </div>
+
+              <div class="col-md-8">
+                <label class="form-label small fw-semibold">Image URL</label>
+                <input type="url" id="add-prod-image" class="form-control" required placeholder="https://images.unsplash.com/...">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Initial Stock</label>
+                <input type="number" id="add-prod-stock" class="form-control" required value="25" min="0">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label small fw-semibold">Description</label>
+                <textarea id="add-prod-desc" class="form-control" rows="3" required placeholder="Detailed specifications and craftsmanship details..."></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm px-3">Publish Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script>
+    async function checkAdminAuth() {
+      const user = api.getCurrentUser();
+      const token = api.getToken();
+      if (!token || !user || !user.is_admin) {
+        alert('Server Authorization: Administrator access required.');
+        window.location.href = '/login.html?redirect=/admin/index.html';
+        return false;
+      }
+      return true;
+    }
+
+    async function loadAdminDashboard() {
+      if (!await checkAdminAuth()) return;
+
+      try {
+        const stats = await api.getAdminDashboard();
+        document.getElementById('stat-revenue').textContent = formatINR(stats.total_revenue);
+        document.getElementById('stat-orders').textContent = stats.total_orders;
+        document.getElementById('stat-products').textContent = stats.total_products;
+        document.getElementById('stat-low-stock').textContent = stats.low_stock_products;
+
+        loadAdminOrders();
+        loadAdminProducts();
+        populateCategoryOptions();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function loadAdminOrders() {
+      const tbody = document.getElementById('admin-orders-table-body');
+      try {
+        const orders = await api.getAdminOrders();
+        if (!orders || orders.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">No orders found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = orders.map(o => `
+          <tr>
+            <td class="font-monospace small fw-bold">${o.id}</td>
+            <td>
+              <div class="fw-semibold small">${o.recipient_name}</div>
+              <div class="text-muted small">${o.phone}</div>
+            </td>
+            <td class="small">${o.items.length} item(s)</td>
+            <td class="fw-bold small">${formatINR(o.total_amount)}</td>
+            <td>
+              <select class="form-select form-select-sm" onchange="changeOrderStatus('${o.id}', this.value)" style="width: auto;">
+                <option value="pending" ${o.order_status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="processing" ${o.order_status === 'processing' ? 'selected' : ''}>Processing</option>
+                <option value="shipped" ${o.order_status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                <option value="delivered" ${o.order_status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                <option value="cancelled" ${o.order_status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+            </td>
+            <td>
+              <span class="badge bg-${o.payment_status === 'paid' ? 'success' : 'warning'}-subtle text-${o.payment_status === 'paid' ? 'success' : 'warning'} text-uppercase">
+                ${o.payment_status}
+              </span>
+            </td>
+            <td>
+              <span class="text-muted small">${o.payment_method}</span>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-danger text-center">Failed to fetch orders: ${e.message}</td></tr>`;
+      }
+    }
+
+    async function loadAdminProducts() {
+      const tbody = document.getElementById('admin-products-table-body');
+      try {
+        const res = await api.getProducts({ page_size: 50 });
+        if (!res.items || res.items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No products created yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = res.items.map(p => `
+          <tr>
+            <td>
+              <img src="${p.image_url}" class="rounded border" style="width: 44px; height: 44px; object-fit: cover;">
+            </td>
+            <td>
+              <div class="fw-semibold small">${p.name}</div>
+              <div class="text-muted small">${p.slug}</div>
+            </td>
+            <td class="fw-bold small">${formatINR(p.price)}</td>
+            <td>
+              <input type="number" class="form-control form-control-sm" style="width: 80px;" value="${p.stock_quantity}" onchange="updateProductStock('${p.id}', this.value)">
+            </td>
+            <td>
+              <span class="badge bg-${p.is_active ? 'success' : 'secondary'}">${p.is_active ? 'Active' : 'Archived'}</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.id}')">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-danger text-center">Failed to fetch products: ${e.message}</td></tr>`;
+      }
+    }
+
+    async function populateCategoryOptions() {
+      try {
+        const categories = await api.getCategories();
+        const select = document.getElementById('add-prod-category');
+        select.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      } catch (e) {}
+    }
+
+    async function changeOrderStatus(orderId, newStatus) {
+      try {
+        await api.updateOrderStatus(orderId, newStatus);
+        showToast(`Order status updated to ${newStatus}`);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function updateProductStock(productId, newStock) {
+      try {
+        await api.updateAdminProduct(productId, { stock_quantity: parseInt(newStock) });
+        showToast('Inventory updated');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function deleteProduct(productId) {
+      if (!confirm('Are you sure you want to archive this product?')) return;
+      try {
+        await api.deleteAdminProduct(productId);
+        showToast('Product deactivated');
+        loadAdminProducts();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    document.getElementById('form-create-product').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const productData = {
+        name: document.getElementById('add-prod-name').value.trim(),
+        slug: document.getElementById('add-prod-slug').value.trim(),
+        category_id: document.getElementById('add-prod-category').value,
+        price: parseFloat(document.getElementById('add-prod-price').value),
+        compare_at_price: document.getElementById('add-prod-compare').value ? parseFloat(document.getElementById('add-prod-compare').value) : null,
+        image_url: document.getElementById('add-prod-image').value.trim(),
+        stock_quantity: parseInt(document.getElementById('add-prod-stock').value),
+        description: document.getElementById('add-prod-desc').value.trim(),
+        is_active: true
+      };
+
+      try {
+        await api.createAdminProduct(productData);
+        showToast('Product created successfully!');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modal-add-product'));
+        if (modal) modal.hide();
+        document.getElementById('form-create-product').reset();
+        loadAdminProducts();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    document.getElementById('btn-admin-logout').addEventListener('click', () => {
+      api.setToken(null);
+      api.setCurrentUser(null);
+      window.location.href = '/login.html';
+    });
+
+    document.addEventListener('DOMContentLoaded', loadAdminDashboard);
+  </script>
+</body>
+</html>

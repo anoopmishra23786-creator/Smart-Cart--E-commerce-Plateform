@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details - SmartCart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-dark text-white py-1 small text-center">
+    Free express shipping on all orders over ₹999 across India.
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg sc-navbar sticky-top">
+    <div class="container">
+      <a class="sc-brand" href="/index.html">
+        <i class="bi bi-cart3"></i>
+        <span>SmartCart</span>
+      </a>
+
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html">Shop All</a></li>
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html?category=electronics">Electronics</a></li>
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html?category=fashion">Fashion</a></li>
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html?category=home-essentials">Home</a></li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-3">
+          <a href="/wishlist.html" class="text-secondary position-relative text-decoration-none">
+            <i class="bi bi-heart fs-5"></i>
+          </a>
+          <a href="/cart.html" class="text-secondary position-relative text-decoration-none">
+            <i class="bi bi-bag fs-5"></i>
+            <span id="nav-cart-badge" class="badge bg-danger badge-count d-none">0</span>
+          </a>
+          <div id="nav-auth-section" class="d-flex align-items-center gap-2"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumbs -->
+  <div class="bg-white border-bottom py-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0 small" id="detail-breadcrumbs">
+          <li class="breadcrumb-item"><a href="/index.html" class="text-decoration-none text-muted">Home</a></li>
+          <li class="breadcrumb-item"><a href="/shop.html" class="text-decoration-none text-muted">Catalog</a></li>
+          <li class="breadcrumb-item active" aria-current="page" id="breadcrumb-product-name">Product</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main Product Detail -->
+  <main class="py-5">
+    <div class="container" id="product-detail-container">
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="sc-footer">
+    <div class="container text-center small">
+      &copy; 2026 SmartCart Inc. Handcrafted quality goods.
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script>
+    const productId = new URLSearchParams(window.location.search).get('id');
+
+    async function loadProductDetail() {
+      if (!productId) {
+        window.location.href = '/shop.html';
+        return;
+      }
+
+      const container = document.getElementById('product-detail-container');
+
+      try {
+        const p = await api.getProduct(productId);
+        document.title = `${p.name} - SmartCart`;
+        document.getElementById('breadcrumb-product-name').textContent = p.name;
+
+        const hasDiscount = p.compare_at_price && p.compare_at_price > p.price;
+        const discountPct = hasDiscount ? Math.round(((p.compare_at_price - p.price) / p.compare_at_price) * 100) : 0;
+        const inStock = p.stock_quantity > 0;
+
+        container.innerHTML = `
+          <div class="row g-5">
+            <!-- Gallery / Image -->
+            <div class="col-lg-6">
+              <div class="border rounded-3 overflow-hidden bg-white shadow-sm p-2 text-center">
+                <img src="${p.image_url}" alt="${p.name}" class="img-fluid rounded" style="max-height: 480px; width: 100%; object-fit: contain;">
+              </div>
+            </div>
+
+            <!-- Product Specs & Action -->
+            <div class="col-lg-6">
+              <span class="badge bg-light text-dark border px-3 py-1 mb-2">${p.category_name || 'Verified Product'}</span>
+              <h1 class="h2 fw-bold mb-3">${p.name}</h1>
+              
+              <div class="d-flex align-items-baseline gap-2 mb-4">
+                <span class="fs-2 fw-bold text-dark">${formatINR(p.price)}</span>
+                ${hasDiscount ? `
+                  <span class="fs-5 text-muted text-decoration-line-through">${formatINR(p.compare_at_price)}</span>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">${discountPct}% OFF</span>
+                ` : ''}
+              </div>
+
+              <!-- Stock availability -->
+              <div class="mb-4">
+                ${inStock ? `
+                  <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                    <i class="bi bi-check-circle-fill me-1"></i> In Stock (${p.stock_quantity} available)
+                  </span>
+                ` : `
+                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">
+                    <i class="bi bi-x-circle-fill me-1"></i> Out of Stock
+                  </span>
+                `}
+              </div>
+
+              <div class="mb-4 text-secondary leading-relaxed">
+                ${p.description}
+              </div>
+
+              <!-- Cart Controls -->
+              <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="input-group" style="width: 130px;">
+                  <button class="btn btn-outline-secondary" type="button" id="btn-qty-minus">-</button>
+                  <input type="number" id="detail-qty" class="form-control text-center" value="1" min="1" max="${p.stock_quantity || 1}">
+                  <button class="btn btn-outline-secondary" type="button" id="btn-qty-plus">+</button>
+                </div>
+                <button class="btn btn-primary px-4 py-2 flex-grow-1" id="btn-detail-add-cart" ${!inStock ? 'disabled' : ''}>
+                  <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                </button>
+                <button class="btn btn-outline-secondary px-3 py-2" id="btn-detail-wishlist" title="Save to Wishlist">
+                  <i class="bi bi-heart"></i>
+                </button>
+              </div>
+
+              <!-- Shipping Info Box -->
+              <div class="p-3 bg-white border rounded-3 small text-muted d-flex flex-column gap-2">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-truck text-primary fs-5"></i>
+                  <span>Free doorstep delivery on orders above ₹999</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-shield-check text-primary fs-5"></i>
+                  <span>100% Genuine, verified quality warranty</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviews Section -->
+          <hr class="my-5">
+          <div class="row">
+            <div class="col-lg-8">
+              <h3 class="h4 fw-bold mb-4">Customer Reviews</h3>
+              <div id="product-reviews-list">
+                <div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading reviews...
+              </div>
+
+              <!-- Review Form -->
+              <div class="mt-5 p-4 bg-white border rounded-3">
+                <h5 class="fw-bold mb-3">Leave a Verified Review</h5>
+                <form id="form-add-review">
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Rating</label>
+                    <select id="review-rating" class="form-select form-select-sm w-auto" required>
+                      <option value="5">5 Stars - Outstanding</option>
+                      <option value="4">4 Stars - Very Good</option>
+                      <option value="3">3 Stars - Average</option>
+                      <option value="2">2 Stars - Below Average</option>
+                      <option value="1">1 Star - Disappointing</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Your Review</label>
+                    <textarea id="review-text" class="form-control" rows="3" placeholder="Share your experience with this product..." required minlength="5"></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-sm px-3">Submit Review</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Event listeners for Quantity
+        const qtyInput = document.getElementById('detail-qty');
+        document.getElementById('btn-qty-minus').addEventListener('click', () => {
+          let val = parseInt(qtyInput.value) || 1;
+          if (val > 1) qtyInput.value = val - 1;
+        });
+        document.getElementById('btn-qty-plus').addEventListener('click', () => {
+          let val = parseInt(qtyInput.value) || 1;
+          if (val < (p.stock_quantity || 1)) qtyInput.value = val + 1;
+        });
+
+        // Add to cart
+        document.getElementById('btn-detail-add-cart').addEventListener('click', async () => {
+          if (!api.getToken()) {
+            showToast('Please sign in to add items to cart', 'error');
+            setTimeout(() => window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`, 800);
+            return;
+          }
+          const quantity = parseInt(qtyInput.value) || 1;
+          try {
+            await api.addToCart(p.id, quantity);
+            showToast(`Added ${quantity} item(s) to your cart!`);
+            updateNavState();
+          } catch (err) {
+            showToast(err.message, 'error');
+          }
+        });
+
+        // Wishlist
+        document.getElementById('btn-detail-wishlist').addEventListener('click', async () => {
+          if (!api.getToken()) {
+            showToast('Please sign in to save items', 'error');
+            setTimeout(() => window.location.href = '/login.html', 800);
+            return;
+          }
+          try {
+            await api.addToWishlist(p.id);
+            showToast('Saved to your wishlist!');
+          } catch (err) {
+            showToast(err.message, 'error');
+          }
+        });
+
+        // Reviews
+        loadReviews(p.id);
+        setupReviewForm(p.id);
+
+      } catch (err) {
+        container.innerHTML = `<div class="alert alert-danger">Error loading product details: ${err.message}</div>`;
+      }
+    }
+
+    async function loadReviews(prodId) {
+      const container = document.getElementById('product-reviews-list');
+      try {
+        const reviews = await api.getProductReviews(prodId);
+        if (!reviews || reviews.length === 0) {
+          container.innerHTML = '<p class="text-muted small">No reviews yet. Be the first to share your thoughts!</p>';
+          return;
+        }
+
+        container.innerHTML = reviews.map(r => {
+          const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+          return `
+            <div class="border-bottom pb-3 mb-3">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="fw-bold small text-dark">${r.user_name || 'Verified Buyer'}</span>
+                <span class="text-warning small">${stars}</span>
+              </div>
+              <p class="text-secondary small mb-0">${r.review_text}</p>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        container.innerHTML = '<p class="text-muted small">Could not load reviews.</p>';
+      }
+    }
+
+    function setupReviewForm(prodId) {
+      const form = document.getElementById('form-add-review');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!api.getToken()) {
+          showToast('Please sign in to write a review', 'error');
+          setTimeout(() => window.location.href = '/login.html', 800);
+          return;
+        }
+        const rating = parseInt(document.getElementById('review-rating').value);
+        const reviewText = document.getElementById('review-text').value.trim();
+
+        try {
+          await api.submitReview(prodId, rating, reviewText);
+          showToast('Thank you! Your review has been submitted.');
+          form.reset();
+          loadReviews(prodId);
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProductDetail);
+  </script>
+</body>
+</html>

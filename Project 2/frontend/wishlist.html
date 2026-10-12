@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wishlist - SmartCart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg sc-navbar sticky-top">
+    <div class="container">
+      <a class="sc-brand" href="/index.html">
+        <i class="bi bi-cart3"></i>
+        <span>SmartCart</span>
+      </a>
+      <div class="d-flex align-items-center gap-3">
+        <a href="/shop.html" class="nav-link sc-nav-link">Shop</a>
+        <a href="/cart.html" class="text-secondary text-decoration-none"><i class="bi bi-bag fs-5"></i></a>
+        <div id="nav-auth-section" class="d-flex align-items-center gap-2"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-5">
+    <div class="container">
+      <h1 class="h3 fw-bold mb-4">Saved Wishlist Items</h1>
+
+      <div class="row g-4" id="wishlist-container">
+        <div class="col-12 text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="sc-footer">
+    <div class="container text-center small">
+      &copy; 2026 SmartCart Inc. Your saved wishlist.
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script>
+    async function loadWishlist() {
+      if (!api.getToken()) {
+        window.location.href = '/login.html?redirect=/wishlist.html';
+        return;
+      }
+
+      const container = document.getElementById('wishlist-container');
+
+      try {
+        const items = await api.getWishlist();
+
+        if (!items || items.length === 0) {
+          container.innerHTML = `
+            <div class="col-12 text-center py-5 bg-white border rounded-3 p-5">
+              <i class="bi bi-heart fs-1 text-muted mb-3 d-block"></i>
+              <h4 class="fw-bold">Your Wishlist is Empty</h4>
+              <p class="text-muted small">Save products that you'd like to revisit and buy later.</p>
+              <a href="/shop.html" class="btn btn-primary px-4 mt-2">Explore Catalog</a>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = items.map(item => `
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="sc-card">
+              <a href="/product.html?id=${item.product_id}" class="sc-card-img-wrap">
+                <img src="${item.image_url}" alt="${item.product_name}" class="sc-card-img">
+              </a>
+              <div class="sc-card-body">
+                <a href="/product.html?id=${item.product_id}" class="sc-card-title">${item.product_name}</a>
+                <div class="d-flex align-items-baseline mb-3">
+                  <span class="sc-price-current">${formatINR(item.price)}</span>
+                  ${item.compare_at_price ? `<span class="sc-price-compare">${formatINR(item.compare_at_price)}</span>` : ''}
+                </div>
+                <div class="mt-auto d-flex gap-2">
+                  <button class="btn btn-primary btn-sm flex-grow-1" onclick="moveToCart('${item.product_id}', '${item.id}')">
+                    <i class="bi bi-cart-plus me-1"></i> Move to Cart
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" onclick="removeWish('${item.id}')" title="Remove">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        container.innerHTML = `<div class="col-12 alert alert-danger">${err.message}</div>`;
+      }
+    }
+
+    async function moveToCart(productId, wishId) {
+      try {
+        await api.addToCart(productId, 1);
+        await api.removeFromWishlist(wishId);
+        showToast('Moved to your cart!');
+        loadWishlist();
+        updateNavState();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function removeWish(wishId) {
+      try {
+        await api.removeFromWishlist(wishId);
+        showToast('Removed from wishlist');
+        loadWishlist();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadWishlist);
+  </script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartCart - Modern Online Shopping</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-dark text-white py-1 small text-center">
+    Free express delivery across India on orders above ₹999. Easy 7-day returns.
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg sc-navbar sticky-top">
+    <div class="container">
+      <a class="sc-brand" href="/index.html">
+        <i class="bi bi-cart3"></i>
+        <span>SmartCart</span>
+      </a>
+
+      <!-- Search Input in Header -->
+      <form class="d-none d-md-flex mx-lg-4 flex-grow-1 max-w-md" action="/shop.html" method="GET" style="max-width: 480px;">
+        <div class="input-group">
+          <input type="text" name="search" class="form-control" placeholder="Search headphones, linen shirts, decor..." aria-label="Search">
+          <button class="btn btn-outline-secondary" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html">Shop All</a></li>
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html?category=electronics">Electronics</a></li>
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html?category=fashion">Fashion</a></li>
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html?category=home-essentials">Home</a></li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-3">
+          <a href="/wishlist.html" class="text-secondary position-relative text-decoration-none">
+            <i class="bi bi-heart fs-5"></i>
+          </a>
+
+          <a href="/cart.html" class="text-secondary position-relative text-decoration-none">
+            <i class="bi bi-bag fs-5"></i>
+            <span id="nav-cart-badge" class="badge bg-danger badge-count d-none">0</span>
+          </a>
+
+          <div id="nav-auth-section" class="d-flex align-items-center gap-2">
+            <!-- Dynamically populated by app.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="sc-hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-semibold mb-3">
+            Spring 2026 Collection Live
+          </span>
+          <h1 class="mb-3">Crafted for Quality. Built for Everyday Life.</h1>
+          <p class="mb-4 text-slate-300">
+            Explore curated electronics, premium minimalist fashion, and artisan home essentials delivered fast across India.
+          </p>
+          <div class="d-flex gap-3">
+            <a href="/shop.html" class="btn btn-primary px-4 py-2">
+              Explore Catalog <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+            <a href="/shop.html?category=electronics" class="btn btn-outline-light px-4 py-2">
+              Browse Audio & Gadgets
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-5 text-center d-none d-lg-block">
+          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80" alt="Hero Featured Product" class="img-fluid rounded-3 shadow-lg" style="max-height: 380px; object-fit: cover;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Categories -->
+  <section class="py-5 bg-white border-bottom">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+          <h2 class="h4 fw-bold mb-1">Featured Categories</h2>
+          <p class="text-muted small mb-0">Browse thoughtful collections designed for precision and durability.</p>
+        </div>
+        <a href="/shop.html" class="text-primary fw-semibold small text-decoration-none">View All Categories &rarr;</a>
+      </div>
+
+      <div class="row g-4" id="categories-container">
+        <!-- Rendered dynamically -->
+        <div class="col-12 text-center py-4 text-muted">
+          <div class="spinner-border text-primary spinner-border-sm" role="status"></div> Loading categories...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trending Products -->
+  <section class="py-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+          <h2 class="h4 fw-bold mb-1">Trending & Best Sellers</h2>
+          <p class="text-muted small mb-0">Direct from our real-time Supabase PostgreSQL catalog.</p>
+        </div>
+        <a href="/shop.html?sort_by=popularity" class="text-primary fw-semibold small text-decoration-none">Explore Best Sellers &rarr;</a>
+      </div>
+
+      <div class="row g-4" id="trending-products-container">
+        <!-- Rendered dynamically -->
+        <div class="col-12 text-center py-5 text-muted">
+          <div class="spinner-border text-primary spinner-border-sm" role="status"></div> Fetching verified catalog...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Value Props Banner -->
+  <section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+      <div class="row g-4 text-center">
+        <div class="col-md-3 col-6">
+          <div class="p-3">
+            <i class="bi bi-truck fs-2 text-primary mb-2"></i>
+            <h6 class="fw-bold mb-1">Free Shipping</h6>
+            <p class="text-muted small mb-0">On all orders over ₹999</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="p-3">
+            <i class="bi bi-shield-check fs-2 text-primary mb-2"></i>
+            <h6 class="fw-bold mb-1">100% Authentic</h6>
+            <p class="text-muted small mb-0">Direct from vetted artisans</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="p-3">
+            <i class="bi bi-arrow-counterclockwise fs-2 text-primary mb-2"></i>
+            <h6 class="fw-bold mb-1">7 Days Return</h6>
+            <p class="text-muted small mb-0">Hassle-free doorstep pickup</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="p-3">
+            <i class="bi bi-headset fs-2 text-primary mb-2"></i>
+            <h6 class="fw-bold mb-1">Live Support</h6>
+            <p class="text-muted small mb-0">Dedicated support team</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="sc-footer">
+    <div class="container">
+      <div class="row g-4 mb-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-cart3 text-white fs-4"></i>
+            <span class="text-white fw-bold fs-5">SmartCart</span>
+          </div>
+          <p class="text-muted small">
+            SmartCart is an e-commerce platform built with FastAPI, PostgreSQL on Supabase, Bootstrap 5, and vanilla JavaScript.
+          </p>
+          <div class="text-muted small">
+            &copy; 2026 SmartCart Inc. All rights reserved.
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <h6>Catalog</h6>
+          <ul class="list-unstyled small d-flex flex-column gap-2">
+            <li><a href="/shop.html?category=electronics">Electronics</a></li>
+            <li><a href="/shop.html?category=fashion">Fashion</a></li>
+            <li><a href="/shop.html?category=home-essentials">Home Essentials</a></li>
+            <li><a href="/shop.html?category=accessories">Accessories</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <h6>Customer Service</h6>
+          <ul class="list-unstyled small d-flex flex-column gap-2">
+            <li><a href="/orders.html">Track Order</a></li>
+            <li><a href="/account.html">Account Dashboard</a></li>
+            <li><a href="/cart.html">View Cart</a></li>
+            <li><a href="/docs" target="_blank">FastAPI Docs</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <h6>Join Our Newsletter</h6>
+          <p class="small text-muted mb-3">Receive weekly drops, exclusive previews, and member discount codes.</p>
+          <form class="d-flex gap-2" onsubmit="event.preventDefault(); showToast('Subscribed to SmartCart weekly updates!'); this.reset();">
+            <input type="email" required class="form-control form-control-sm" placeholder="Enter your email">
+            <button type="submit" class="btn btn-sm btn-primary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script>
+    // Load Homepage Featured Categories and Trending Products
+    async function initHomePage() {
+      // 1. Categories
+      try {
+        const categories = await api.getCategories();
+        const catContainer = document.getElementById('categories-container');
+        if (categories && categories.length > 0) {
+          catContainer.innerHTML = categories.map(c => `
+            <div class="col-md-3 col-sm-6">
+              <a href="/shop.html?category=${c.slug}" class="sc-card text-decoration-none">
+                <div class="sc-card-img-wrap" style="padding-top: 60%;">
+                  <img src="${c.image_url}" alt="${c.name}" class="sc-card-img">
+                </div>
+                <div class="sc-card-body p-3 text-center">
+                  <h6 class="fw-bold mb-1 text-dark">${c.name}</h6>
+                  <span class="text-muted small">View collection &rarr;</span>
+                </div>
+              </a>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        console.error('Failed loading categories', e);
+      }
+
+      // 2. Products
+      try {
+        const prodData = await api.getProducts({ page: 1, page_size: 8, sort_by: 'newest' });
+        const prodContainer = document.getElementById('trending-products-container');
+        if (prodData && prodData.items && prodData.items.length > 0) {
+          prodContainer.innerHTML = prodData.items.map(p => {
+            const hasDiscount = p.compare_at_price && p.compare_at_price > p.price;
+            const discountPct = hasDiscount ? Math.round(((p.compare_at_price - p.price) / p.compare_at_price) * 100) : 0;
+            return `
+              <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="sc-card">
+                  <a href="/product.html?id=${p.id}" class="sc-card-img-wrap">
+                    <img src="${p.image_url}" alt="${p.name}" class="sc-card-img" loading="lazy">
+                  </a>
+                  <div class="sc-card-body">
+                    <span class="text-muted small mb-1">${p.category_name || 'Featured'}</span>
+                    <a href="/product.html?id=${p.id}" class="sc-card-title">${p.name}</a>
+                    <div class="d-flex align-items-baseline mb-3">
+                      <span class="sc-price-current">${formatINR(p.price)}</span>
+                      ${hasDiscount ? `
+                        <span class="sc-price-compare">${formatINR(p.compare_at_price)}</span>
+                        <span class="sc-price-discount">${discountPct}% OFF</span>
+                      ` : ''}
+                    </div>
+                    <div class="mt-auto d-flex gap-2">
+                      <button class="btn btn-outline-primary btn-sm flex-grow-1" onclick="handleQuickAddToCart('${p.id}')">
+                        <i class="bi bi-cart-plus me-1"></i> Add
+                      </button>
+                      <button class="btn btn-outline-secondary btn-sm" onclick="handleQuickWishlist('${p.id}')" title="Save to Wishlist">
+                        <i class="bi bi-heart"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        console.error('Failed loading products', e);
+      }
+    }
+
+    async function handleQuickAddToCart(productId) {
+      if (!api.getToken()) {
+        showToast('Please sign in to add items to your cart', 'error');
+        setTimeout(() => window.location.href = '/login.html', 800);
+        return;
+      }
+      try {
+        await api.addToCart(productId, 1);
+        showToast('Item added to your cart!');
+        updateNavState();
+      } catch (err) {
+        showToast(err.message || 'Could not add to cart', 'error');
+      }
+    }
+
+    async function handleQuickWishlist(productId) {
+      if (!api.getToken()) {
+        showToast('Please sign in to save items to wishlist', 'error');
+        setTimeout(() => window.location.href = '/login.html', 800);
+        return;
+      }
+      try {
+        await api.addToWishlist(productId);
+        showToast('Saved to wishlist!');
+      } catch (err) {
+        showToast(err.message || 'Could not save to wishlist', 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initHomePage);
+  </script>
+</body>
+</html>

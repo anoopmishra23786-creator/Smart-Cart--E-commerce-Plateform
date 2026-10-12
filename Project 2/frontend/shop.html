@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Catalog - SmartCart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-dark text-white py-1 small text-center">
+    Free express delivery across India on orders above ₹999.
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg sc-navbar sticky-top">
+    <div class="container">
+      <a class="sc-brand" href="/index.html">
+        <i class="bi bi-cart3"></i>
+        <span>SmartCart</span>
+      </a>
+
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link sc-nav-link active" href="/shop.html">Shop All</a></li>
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html?category=electronics">Electronics</a></li>
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html?category=fashion">Fashion</a></li>
+          <li class="nav-item"><a class="nav-link sc-nav-link" href="/shop.html?category=home-essentials">Home</a></li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-3">
+          <a href="/wishlist.html" class="text-secondary position-relative text-decoration-none">
+            <i class="bi bi-heart fs-5"></i>
+          </a>
+          <a href="/cart.html" class="text-secondary position-relative text-decoration-none">
+            <i class="bi bi-bag fs-5"></i>
+            <span id="nav-cart-badge" class="badge bg-danger badge-count d-none">0</span>
+          </a>
+          <div id="nav-auth-section" class="d-flex align-items-center gap-2"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header Breadcrumb -->
+  <div class="bg-white border-bottom py-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0 small">
+          <li class="breadcrumb-item"><a href="/index.html" class="text-decoration-none text-muted">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Catalog</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Shop Main Content -->
+  <main class="py-5">
+    <div class="container">
+      <div class="row g-4">
+        <!-- Sidebar Filters -->
+        <aside class="col-lg-3">
+          <div class="bg-white border rounded-3 p-4 sticky-top" style="top: 85px;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0">Filters</h5>
+              <button class="btn btn-link btn-sm text-decoration-none p-0 text-muted" id="btn-clear-filters">Reset</button>
+            </div>
+
+            <!-- Search Filter -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-muted text-uppercase">Search</label>
+              <div class="input-group input-group-sm">
+                <input type="text" id="filter-search" class="form-control" placeholder="Search keywords...">
+                <button class="btn btn-outline-secondary" id="btn-search-apply"><i class="bi bi-search"></i></button>
+              </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-muted text-uppercase">Category</label>
+              <div class="d-flex flex-column gap-2" id="filter-categories-list">
+                <div class="form-check small">
+                  <input class="form-check-input" type="radio" name="categoryFilter" id="cat-all" value="" checked>
+                  <label class="form-check-label" for="cat-all">All Categories</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price Range -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-muted text-uppercase">Price Range (₹)</label>
+              <div class="row g-2">
+                <div class="col-6">
+                  <input type="number" id="filter-min-price" class="form-control form-control-sm" placeholder="Min ₹">
+                </div>
+                <div class="col-6">
+                  <input type="number" id="filter-max-price" class="form-control form-control-sm" placeholder="Max ₹">
+                </div>
+              </div>
+              <button class="btn btn-outline-primary btn-sm w-100 mt-2" id="btn-apply-price">Apply Range</button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Product Grid & Toolbar -->
+        <div class="col-lg-9">
+          <!-- Toolbar -->
+          <div class="bg-white border rounded-3 p-3 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <span class="text-muted small" id="catalog-count-text">Loading catalog products...</span>
+            <div class="d-flex align-items-center gap-2 ms-auto">
+              <label for="sort-select" class="small text-muted text-nowrap">Sort By:</label>
+              <select id="sort-select" class="form-select form-select-sm" style="width: auto;">
+                <option value="newest">Newest Arrivals</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="popularity">Most Popular</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Product Grid Container -->
+          <div class="row g-4" id="shop-products-grid">
+            <div class="col-12 text-center py-5">
+              <div class="spinner-border text-primary" role="status"></div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <nav class="mt-5 d-flex justify-content-center" aria-label="Catalog pagination">
+            <ul class="pagination pagination-sm" id="catalog-pagination"></ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="sc-footer">
+    <div class="container text-center small">
+      &copy; 2026 SmartCart Inc. Handcrafted e-commerce experience.
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script>
+    let currentCategory = new URLSearchParams(window.location.search).get('category') || '';
+    let currentSearch = new URLSearchParams(window.location.search).get('search') || '';
+    let currentSort = new URLSearchParams(window.location.search).get('sort_by') || 'newest';
+    let currentMinPrice = '';
+    let currentMaxPrice = '';
+    let currentPage = 1;
+
+    async function loadCategories() {
+      try {
+        const categories = await api.getCategories();
+        const container = document.getElementById('filter-categories-list');
+        const radios = categories.map(c => `
+          <div class="form-check small">
+            <input class="form-check-input" type="radio" name="categoryFilter" id="cat-${c.slug}" value="${c.slug}" ${currentCategory === c.slug ? 'checked' : ''}>
+            <label class="form-check-label" for="cat-${c.slug}">${c.name}</label>
+          </div>
+        `).join('');
+
+        container.innerHTML = `
+          <div class="form-check small">
+            <input class="form-check-input" type="radio" name="categoryFilter" id="cat-all" value="" ${!currentCategory ? 'checked' : ''}>
+            <label class="form-check-label" for="cat-all">All Categories</label>
+          </div>
+          ${radios}
+        `;
+
+        document.querySelectorAll('input[name="categoryFilter"]').forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            currentCategory = e.target.value;
+            currentPage = 1;
+            loadProducts();
+          });
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function loadProducts() {
+      const grid = document.getElementById('shop-products-grid');
+      const countText = document.getElementById('catalog-count-text');
+      grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+
+      try {
+        const res = await api.getProducts({
+          category: currentCategory,
+          search: currentSearch,
+          min_price: currentMinPrice,
+          max_price: currentMaxPrice,
+          sort_by: currentSort,
+          page: currentPage,
+          page_size: 9
+        });
+
+        countText.textContent = `Showing ${res.items.length} of ${res.total} products`;
+
+        if (res.items.length === 0) {
+          grid.innerHTML = `
+            <div class="col-12 text-center py-5">
+              <i class="bi bi-box-seam fs-1 text-muted mb-3 d-block"></i>
+              <h5 class="fw-bold">No products found</h5>
+              <p class="text-muted small">Try modifying or resetting your active filters.</p>
+            </div>
+          `;
+          document.getElementById('catalog-pagination').innerHTML = '';
+          return;
+        }
+
+        grid.innerHTML = res.items.map(p => {
+          const hasDiscount = p.compare_at_price && p.compare_at_price > p.price;
+          const discountPct = hasDiscount ? Math.round(((p.compare_at_price - p.price) / p.compare_at_price) * 100) : 0;
+          return `
+            <div class="col-md-4 col-sm-6">
+              <div class="sc-card">
+                <a href="/product.html?id=${p.id}" class="sc-card-img-wrap">
+                  <img src="${p.image_url}" alt="${p.name}" class="sc-card-img" loading="lazy">
+                </a>
+                <div class="sc-card-body">
+                  <span class="text-muted small mb-1">${p.category_name || ''}</span>
+                  <a href="/product.html?id=${p.id}" class="sc-card-title">${p.name}</a>
+                  <div class="d-flex align-items-baseline mb-3">
+                    <span class="sc-price-current">${formatINR(p.price)}</span>
+                    ${hasDiscount ? `
+                      <span class="sc-price-compare">${formatINR(p.compare_at_price)}</span>
+                      <span class="sc-price-discount">${discountPct}% OFF</span>
+                    ` : ''}
+                  </div>
+                  <div class="mt-auto d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm flex-grow-1" onclick="handleQuickAddToCart('${p.id}')">
+                      <i class="bi bi-cart-plus me-1"></i> Add
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="handleQuickWishlist('${p.id}')">
+                      <i class="bi bi-heart"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        renderPagination(res.page, res.total_pages);
+      } catch (err) {
+        grid.innerHTML = `<div class="col-12 alert alert-danger">Error loading products: ${err.message}</div>`;
+      }
+    }
+
+    function renderPagination(current, total) {
+      const pag = document.getElementById('catalog-pagination');
+      if (total <= 1) {
+        pag.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+      for (let i = 1; i <= total; i++) {
+        html += `
+          <li class="page-item ${i === current ? 'active' : ''}">
+            <button class="page-link" onclick="goToPage(${i})">${i}</button>
+          </li>
+        `;
+      }
+      pag.innerHTML = html;
+    }
+
+    function goToPage(page) {
+      currentPage = page;
+      loadProducts();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function handleQuickAddToCart(productId) {
+      if (!api.getToken()) {
+        showToast('Please sign in to add items to cart', 'error');
+        setTimeout(() => window.location.href = '/login.html', 800);
+        return;
+      }
+      try {
+        await api.addToCart(productId, 1);
+        showToast('Item added to your cart!');
+        updateNavState();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function handleQuickWishlist(productId) {
+      if (!api.getToken()) {
+        showToast('Please sign in to save items to wishlist', 'error');
+        setTimeout(() => window.location.href = '/login.html', 800);
+        return;
+      }
+      try {
+        await api.addToWishlist(productId);
+        showToast('Saved to wishlist!');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Setup initial search value if in URL
+      if (currentSearch) {
+        document.getElementById('filter-search').value = currentSearch;
+      }
+
+      document.getElementById('sort-select').value = currentSort;
+      document.getElementById('sort-select').addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        currentPage = 1;
+        loadProducts();
+      });
+
+      document.getElementById('btn-search-apply').addEventListener('click', () => {
+        currentSearch = document.getElementById('filter-search').value.trim();
+        currentPage = 1;
+        loadProducts();
+      });
+
+      document.getElementById('btn-apply-price').addEventListener('click', () => {
+        currentMinPrice = document.getElementById('filter-min-price').value;
+        currentMaxPrice = document.getElementById('filter-max-price').value;
+        currentPage = 1;
+        loadProducts();
+      });
+
+      document.getElementById('btn-clear-filters').addEventListener('click', () => {
+        currentCategory = '';
+        currentSearch = '';
+        currentMinPrice = '';
+        currentMaxPrice = '';
+        currentSort = 'newest';
+        document.getElementById('filter-search').value = '';
+        document.getElementById('filter-min-price').value = '';
+        document.getElementById('filter-max-price').value = '';
+        document.getElementById('cat-all').checked = true;
+        document.getElementById('sort-select').value = 'newest';
+        currentPage = 1;
+        loadProducts();
+      });
+
+      loadCategories();
+      loadProducts();
+    });
+  </script>
+</body>
+</html>

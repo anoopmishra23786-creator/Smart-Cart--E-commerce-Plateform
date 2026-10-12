@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - SmartCart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg sc-navbar">
+    <div class="container">
+      <a class="sc-brand" href="/index.html">
+        <i class="bi bi-cart3"></i>
+        <span>SmartCart</span>
+      </a>
+      <span class="badge bg-light text-dark border px-3 py-2 small">
+        <i class="bi bi-shield-lock-fill text-success me-1"></i> Secure Checkout
+      </span>
+    </div>
+  </nav>
+
+  <!-- Checkout Main -->
+  <main class="py-5">
+    <div class="container">
+      <h1 class="h3 fw-bold mb-4">Complete Your Order</h1>
+
+      <div class="row g-4" id="checkout-content">
+        <!-- Shipping Form -->
+        <div class="col-lg-7">
+          <div class="bg-white border rounded-3 p-4 mb-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt me-2 text-primary"></i>1. Delivery Address</h5>
+            
+            <form id="form-checkout">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label small fw-semibold">Recipient Full Name</label>
+                  <input type="text" id="recipient-name" class="form-control" required placeholder="e.g. Rahul Verma">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Mobile Phone</label>
+                  <input type="tel" id="recipient-phone" class="form-control" required placeholder="e.g. +91 98765 43210">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Postal Code (PIN)</label>
+                  <input type="text" id="recipient-pincode" class="form-control" required placeholder="e.g. 560001">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label small fw-semibold">Street Address / House No.</label>
+                  <input type="text" id="recipient-address" class="form-control" required placeholder="Apartment, suite, unit, building, floor, etc.">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">City</label>
+                  <input type="text" id="recipient-city" class="form-control" required placeholder="e.g. Bengaluru">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">State</label>
+                  <input type="text" id="recipient-state" class="form-control" required placeholder="e.g. Karnataka">
+                </div>
+              </div>
+
+              <hr class="my-4">
+
+              <h5 class="fw-bold mb-3"><i class="bi bi-credit-card me-2 text-primary"></i>2. Payment Simulation</h5>
+              <p class="text-muted small">
+                Choose a payment option below. This is an explicit simulation mode for development — no actual card details will be charged.
+              </p>
+
+              <div class="d-flex flex-column gap-2 mb-4">
+                <div class="form-check p-3 border rounded-3">
+                  <input class="form-check-input ms-0 me-3" type="radio" name="paymentMethod" id="pay-cod" value="cod" checked>
+                  <label class="form-check-label fw-semibold" for="pay-cod">
+                    Cash on Delivery (COD)
+                    <span class="d-block text-muted small fw-normal">Pay with cash or UPI upon doorstep parcel arrival</span>
+                  </label>
+                </div>
+
+                <div class="form-check p-3 border rounded-3">
+                  <input class="form-check-input ms-0 me-3" type="radio" name="paymentMethod" id="pay-upi" value="upi_demo">
+                  <label class="form-check-label fw-semibold" for="pay-upi">
+                    Instant UPI Demo (GPay, PhonePe, Paytm)
+                    <span class="d-block text-muted small fw-normal">Instant digital confirmation simulation</span>
+                  </label>
+                </div>
+
+                <div class="form-check p-3 border rounded-3">
+                  <input class="form-check-input ms-0 me-3" type="radio" name="paymentMethod" id="pay-card" value="card_demo">
+                  <label class="form-check-label fw-semibold" for="pay-card">
+                    Credit / Debit Card Demo
+                    <span class="d-block text-muted small fw-normal">Sandbox test transaction</span>
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" id="btn-submit-order" class="btn btn-primary w-100 py-3 fw-bold">
+                Place Order Now <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Order Summary Column -->
+        <div class="col-lg-5">
+          <div class="bg-white border rounded-3 p-4 sticky-top" style="top: 85px;" id="checkout-summary-box">
+            <h5 class="fw-bold mb-3">Order Items</h5>
+            <div id="checkout-items-list" class="mb-3 d-flex flex-column gap-2">
+              <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between mb-2 small text-muted">
+              <span>Subtotal</span>
+              <span class="text-dark fw-semibold" id="sum-subtotal">₹0.00</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-3 small text-muted">
+              <span>Delivery Fee</span>
+              <span class="text-dark fw-semibold" id="sum-shipping">₹0.00</span>
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="fw-bold">Total Amount</span>
+              <span class="fs-4 fw-bold text-primary" id="sum-total">₹0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="sc-footer">
+    <div class="container text-center small">
+      &copy; 2026 SmartCart Inc. Secure test checkout simulation.
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script>
+    async function initCheckout() {
+      if (!api.getToken()) {
+        window.location.href = '/login.html?redirect=/checkout.html';
+        return;
+      }
+
+      // Prefill user details if available
+      const user = api.getCurrentUser();
+      if (user) {
+        document.getElementById('recipient-name').value = user.full_name || '';
+        if (user.phone) document.getElementById('recipient-phone').value = user.phone;
+      }
+
+      try {
+        const cart = await api.getCart();
+        if (!cart.items || cart.items.length === 0) {
+          window.location.href = '/cart.html';
+          return;
+        }
+
+        const itemsContainer = document.getElementById('checkout-items-list');
+        itemsContainer.innerHTML = cart.items.map(item => `
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+              <img src="${item.image_url}" class="rounded border" style="width: 44px; height: 44px; object-fit: cover;">
+              <div>
+                <span class="fw-semibold small d-block text-truncate" style="max-width: 190px;">${item.product_name}</span>
+                <span class="text-muted small">Qty: ${item.quantity} × ${formatINR(item.price)}</span>
+              </div>
+            </div>
+            <span class="fw-bold small text-dark">${formatINR(item.line_total)}</span>
+          </div>
+        `).join('');
+
+        document.getElementById('sum-subtotal').textContent = formatINR(cart.subtotal);
+        document.getElementById('sum-shipping').innerHTML = cart.free_shipping_achieved ? '<span class="text-success fw-bold">FREE</span>' : formatINR(cart.shipping_fee);
+        document.getElementById('sum-total').textContent = formatINR(cart.total);
+
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Handle Order Submission
+    document.getElementById('form-checkout').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-order');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing Order...';
+
+      const address = {
+        recipient_name: document.getElementById('recipient-name').value.trim(),
+        phone: document.getElementById('recipient-phone').value.trim(),
+        address_line: document.getElementById('recipient-address').value.trim(),
+        city: document.getElementById('recipient-city').value.trim(),
+        state: document.getElementById('recipient-state').value.trim(),
+        postal_code: document.getElementById('recipient-pincode').value.trim(),
+        country: 'India'
+      };
+
+      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+      try {
+        const order = await api.createOrder(address, paymentMethod);
+        showToast('Order confirmed successfully!');
+        setTimeout(() => {
+          window.location.href = `/orders.html?id=${order.id}`;
+        }, 1000);
+      } catch (err) {
+        showToast(err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Place Order Now <i class="bi bi-arrow-right ms-1"></i>';
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', initCheckout);
+  </script>
+</body>
+</html>
